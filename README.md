@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Standards
 
-## Getting Started
+## Naming conventions
 
-First, run the development server:
+- `kebab-case` - for all folders/files.
+- `PascalCase` - for classes and types.
+- `snake_case` - for database tables and columns.
+- `camelCase` - for functions, zod schemas and etc.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Folder structure
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `src` - main source code.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Router
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/app` - for app router.
+  - `src/app/<route-name>/page.tsx` - for route page component.
 
-## Learn More
+### Features
 
-To learn more about Next.js, take a look at the following resources:
+- `src/features` - for feature modules.
+  - `src/features/<feature-name>` - for feature module.
+    - `src/features/<feature-name>/actions` - for server actions.
+    - `src/features/<feature-name>/components` - for components.
+    - `src/features/<feature-name>/constants` - for constants.
+    - `src/features/<feature-name>/utils` - for utilities.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Shared
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `src/shared` - shared modules.
+  - `src/shared/components` - for shared components.
+    - `src/shared/components/ui/*` - for shared ui components (`button`, `input` & etc).
+  - `src/shared/constants` - for shared constants.
+  - `src/shared/data` - for data access layer. (e.g. `api`, `database`).
+  - `src/shared/mutation` - for shared `react-query` mutation. **(Only if needed)**
+  - `src/shared/query` - for shared `react-query` query. **(Only if needed)**
+  - `src/shared/stores` - for shared zustand stores.
+  - `src/shared/types` - for shared types.
+  - `src/shared/utils` - for shared utilities.
 
-## Deploy on Vercel
+### Sample Flow(s)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Creating new feature with API/DB calls using **RSC**.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   1. Create a new feature module in `src/features`.
+   2. Create a new page component in `src/app`.
+   3. Create a new shared component in `src/shared/components`. **(Only if needed)**
+   4. Create a data access layer in `src/shared/data`.
+      1. Create a function for fetching data through API or directly to DB.
+   5. Create a server action in `src/features/<feature-name>/actions`.
+      1. Create a function with `use server` directive for calling the data access layer. (normally, it will be a WRITE operation such as `create`, `update`, `delete`).
+   6. Lastly, you can call data access layer directly from the RSC component or RSC page component.
+
+2. Creating new feature with API/DB calls using `TanStack React Query`.
+   1. Create a new feature module in `src/features`.
+   2. Create a new page component in `src/app`.
+   3. Create a new shared component in `src/shared/components`. **(Only if needed)**
+   4. Create a data access layer in `src/shared/data`.
+      1. Create a function for fetching data through API or directly to DB.
+   5. Create a query in `src/shared/query`.
+      1. Create a query function with `useQuery` from `react-query`. (e.g. `useSamplesQuery`).
+   6. Create a mutation in `src/shared/mutation`.
+      1. Create a mutation function with `useMutation` from `react-query`. (e.g. `useSampleCreateMutation`).
+   7. Lastly, you can call query/mutation directly from the client component or client page component using `use-client` directive.
